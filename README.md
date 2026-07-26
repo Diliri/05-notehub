@@ -1,77 +1,83 @@
-# React + TypeScript + Vite
+# 📝 NoteHub — Web Application for Managing Notes
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**NoteHub** — це сучасний вебдодаток для створення, зберігання, видалення та пошуку персональних нотаток. Проєкт розроблено з використанням **React**, **TypeScript** та **TanStack Query (React Query)** у рамках курсу GoIT. Додаток інтегрується з REST API сервісу NoteHub за допомогою Bearer-авторизації.
 
-Currently, two official plugins are available:
+🚀 **Жива сторінка (Vercel):** [05-notehub](https://05-notehub-pi-sandy.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## 🛠 Технологічний стек (Tech Stack)
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+* **Frontend Framework:** React (Functional Components, Hooks)
+* **Мова програмування:** TypeScript (сувора типізація пропсів, подій та API-відповідей)
+* **Серверний стан та кешування:** TanStack Query v5 (`useQuery`, `useMutation`, `useQueryClient`)
+* **Робота з HTTP:** Axios (із налаштуванням глобального `instance` та `Authorization` заголовка)
+* **Форми та валідація:** Formik + Yup
+* **Оптимізація:** `use-debounce` (затримка запитів при пошуку)
+* **Компоненти UI:** `react-paginate` (пагінація), React Portals (модальні вікна)
+* **Стилізація:** CSS Modules, `modern-normalize`
+* **Збирач:** Vite
+* **Деплой:** Vercel
 
-Note: This will impact Vite dev & build performances.
+---
 
-## Expanding the ESLint configuration
+## ✨ Ключовий функціонал (Features)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **CRUD Операції з нотатками:**
+   * Перегляд списку нотаток із можливістю фільтрації за тегами та пошуковим словом.
+   * Створення нових нотаток через модальне вікно.
+   * Видалення нотаток у реальному часі.
+2. **Розумне кешування та інвалідація:**
+   * Завдяки TanStack Query після створення або видалення нотатки кеш оновлюється автоматично (`invalidateQueries`), забезпечуючи актуальність даних.
+3. **Плавна пагінація:**
+   * Використання `keepPreviousData` запобігає «мерехтінню» інтерфейсу при переході між сторінками.
+4. **Дебаунс пошуку:**
+   * Пошукові запити відправляються на сервер тільки після паузи в введенні тексту (500 мс), що зменшує навантаження на API.
+5. **Валідація та безпека:**
+   * Строга перевірка введених даних у формі (довжина заголовка, обов'язковість тегів).
+   * Авторизація через токен доступу (`VITE_NOTEHUB_TOKEN`), прихований у змінних оточення.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📁 Структура проєкту (Architecture)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Проєкт має модульну структуру, де кожен компонент ізольований у власній папці поруч зі стилями:
 
+* `src/components/`
+  * `App/` — головний контейнер додатка та менеджмент стану пошуку.
+  * `NoteList/` — відображення колекції нотаток та локальна мутація видалення.
+  * `NoteForm/` — форма Formik/Yup та локальна мутація створення нотатки.
+  * `Modal/` — універсальне модальне вікно на базі `createPortal`.
+  * `Pagination/` — компонент пагінації на базі `react-paginate`.
+  * `SearchBox/` — поле пошуку з підтримкою debounce.
+* `src/services/noteService.ts` — шар запитів до API через Axios.
+* `src/types/note.ts` — глобальні інтерфейси TypeScript (`Note`, `NoteTag`, `NewNoteData`).
+
+---
+
+## 🚀 Локальний запуск (Local Setup)
+Клонуйте репозиторій:
+```bash
+git clone https://github.com/Diliri/05-notehub.git
 ```
+Перейдіть у папку проєкту:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+cd 05-notehub
 ```
+Встановіть залежності:
+
+```bash
+npm install
+```
+Створіть файл .env у корені проєкту та додайте свій токен:
+
+```bash
+VITE_NOTEHUB_TOKEN=ваш_персональний_bearer_токен
+```
+Запустіть проєкт локально:
+
+```bash
+npm run dev
+```
+Produced by Diana Muzhylivska
